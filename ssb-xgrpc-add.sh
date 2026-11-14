@@ -182,6 +182,8 @@ else
 fi
 
 OUTDIR="/root/ssb-xgrpc-out/${ORDER}-${TAG}"
+lv_all="${lv_vless}${lv_trj}"
+printf '%s' "$lv_all" > "${OUTDIR}/links-all.txt"
 mkdir -p "$OUTDIR"
 chmod 600 "$OUTDIR"/*-CLIENT.json 2>/dev/null
 chmod 700 /root/ssb-xgrpc-out 2>/dev/null
