@@ -57,6 +57,24 @@ rulesetpath=$(grep "alias /var/www/" /etc/nginx/nginx.conf 2>/dev/null | head -n
 TPL_B64="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"
 TPL="/tmp/xg-tpl-$$.json"
 printf '%s' "$TPL_B64" | base64 -d | gunzip > "$TPL"
+# пиннинг IP ноды (anti-DNS-spoof): IP подставляется резолвом домена;
+# если домен не резолвится — пиннинг отключается, конфиг не ломается
+nodeip=$(getent ahostsv4 "${domain:-}" 2>/dev/null | awk '{print $1; exit}')
+if [[ -n $nodeip ]]; then
+    sed -i "s|NODEIP|${nodeip}|g" "$TPL"
+else
+    python3 - "$TPL" <<'PYIP'
+import json, sys
+p = sys.argv[1]
+c = json.load(open(p))
+for r in c.get("route", {}).get("rules", []):
+    if "ip_cidr" in r:
+        r["ip_cidr"] = [x for x in r["ip_cidr"] if x != "NODEIP"]
+        if not r["ip_cidr"]:
+            del r["ip_cidr"]
+json.dump(c, open(p, "w"), ensure_ascii=False)
+PYIP
+fi
 sed -i "s|DOMAIN|${domain}|g" "$TPL"
 if [[ -n $rulesetpath && -d /var/www/$rulesetpath ]]; then
     sed -i "s|RULESETPATH|${rulesetpath}|g" "$TPL"
