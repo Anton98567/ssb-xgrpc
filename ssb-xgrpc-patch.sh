@@ -54,9 +54,9 @@ case "$CMD" in
 apply)
     [[ "$SCHEME" == "http" || "$SCHEME" == "grpc" ]] || { echo "Использование: ssb-xgrpc-patch apply {http|grpc} [порт]"; exit 1; }
     if [[ "$SCHEME" == "http" ]]; then
-        TAG="http"; PORT="${PORT:-2080}"; TP="http"
+        TAG="http"; PORT="${PORT:-2080}"; VPORT=$((PORT + 2)); TP="http"
     else
-        TAG="grpc"; PORT="${PORT:-2081}"; TP="grpc"
+        TAG="grpc"; PORT="${PORT:-2081}"; VPORT=$((PORT + 2)); TP="grpc"
     fi
     domain=$(detect_domain)
     cert="/etc/letsencrypt/live/${domain}/fullchain.pem"; key="/etc/letsencrypt/live/${domain}/privkey.pem"
@@ -81,7 +81,7 @@ apply)
             "tls":{"enabled":true,"server_name":$d,"certificate_path":$cert,"key_path":$key},
             "transport":$tp
         }]' "$SBXCFG" > /tmp/xg-$$.json && mv /tmp/xg-$$.json "$SBXCFG"
-    jq --arg tag "vless-${TAG}" --argjson port "$PORT" --arg d "$domain" \
+    jq --arg tag "vless-${TAG}" --argjson port "$VPORT" --arg d "$domain" \
        --arg cu "$seed_u" --arg cuuid "$seed_uuid" --arg cert "$cert" --arg key "$key" --argjson tp "$TJSON" '
         .inbounds += [{
             "type":"vless","tag":$tag,"listen":"::","listen_port":$port,
@@ -92,9 +92,10 @@ apply)
     if sing-box check -C "$(dirname "$SBXCFG")" >/dev/null 2>&1; then echo "  конфиг валиден ✅"; else
         echo "!!! check провалился — откат"; cp "$(ls -1t /root/sb-config-backup-*.json | head -1)" "$SBXCFG"; exit 1; fi
     fw_open "$PORT"
+    fw_open "$VPORT"
     systemctl reload sing-box.service 2>/dev/null; sleep 5
     systemctl is-active --quiet sing-box && echo "  сервис перезагружен ✅" || { systemctl restart sing-box.service; sleep 8; systemctl is-active sing-box; }
-    echo "Готово: ${SCHEME} на порту ${PORT}/tcp (домен ${domain}). Выдать конфиги: ssb-xgrpc-add ORDER-x 10 ${SCHEME}"
+    echo "Готово: ${SCHEME} trojan=${PORT}/tcp vless=${VPORT}/tcp (домен ${domain}). Выдать конфиги: ssb-xgrpc-add ORDER-x 10 ${SCHEME}"
     ;;
 remove)
     [[ "$SCHEME" == "http" || "$SCHEME" == "grpc" ]] || { echo "Использование: ssb-xgrpc-patch remove {http|grpc}"; exit 1; }
